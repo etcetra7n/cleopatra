@@ -2,3 +2,8 @@
 name = "cleopatra"
 main = "worker/index.js"
 compatibility_date = "2025-01-28"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cleopatra"
+database_id = "b3d9175d-6acc-4f2f-9953-795bd8cb87bb"
