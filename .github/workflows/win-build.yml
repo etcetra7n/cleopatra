@@ -1,0 +1,21 @@
+name: Windows x64 daemon build
+
+on:
+  push
+
+jobs:
+  win64_build:
+    name: Build x64 binaries
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build binaries
+        run: |
+          cmake . -A x64 -G "Unix Makefiles"
+          make .
+      - name: Upload binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: cleopatra.exe
+          path: cleopatra.exe
