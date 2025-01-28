@@ -13,6 +13,8 @@ else()
 endif()
 find_package(CURL REQUIRED)
 
+set( CMAKE_CXX_COMPILER "g++" )
+
 set(HEADERS
 
 )
