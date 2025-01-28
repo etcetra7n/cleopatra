@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@google/generative-ai": "^0.14.1",
-    "firebase-admin": "^12.2.0"
-  }
-}
