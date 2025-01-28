@@ -3,6 +3,7 @@ project(cleopatra
     VERSION 0.1.0
     LANGUAGES CXX
 )
+set( CMAKE_CXX_COMPILER "g++" )
 
 set(CMAKE_CXX_STANDARD 14)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -13,7 +14,6 @@ else()
 endif()
 find_package(CURL REQUIRED)
 
-set( CMAKE_CXX_COMPILER "g++" )
 
 set(HEADERS
 
