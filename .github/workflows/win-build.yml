@@ -9,13 +9,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build binaries
         run: |
           cmake . -A x64 -G "Unix Makefiles"
           make .
       - name: Upload binaries
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: cleopatra.exe
           path: cleopatra.exe
