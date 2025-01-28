@@ -1,17 +1,10 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.30.0)
+set( CMAKE_CXX_COMPILER "g++" )
 project(cleopatra
     VERSION 0.1.0
     LANGUAGES CXX
 )
-set( CMAKE_CXX_COMPILER "g++" )
-
-set(CMAKE_CXX_STANDARD 14)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14 /W4")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -Wpedantic -mwindows")
-endif()
+set(CMAKE_CXX_STANDARD 23)
 find_package(CURL REQUIRED)
 
 
