@@ -1,0 +1,1 @@
+copy generateThread\generateThread.pretty.js ..\functions\generateThread\generateThread.js & copy processUserId\processUserId.pretty.js ..\functions\processUserId\processUserId.js & copy processPayment\processPayment.pretty.js ..\functions\processPayment\processPayment.js & copy v2-thread\v2-thread.pretty.js ..\functions\v2-thread\v2-thread.js & pause
