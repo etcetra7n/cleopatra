@@ -4,11 +4,12 @@ project(cleopatra
     LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 
 set(SOURCES
     daemon/cleopatra.cpp
 )
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 include_directories(include)
 add_executable(cleopatra ${SOURCES})
 target_link_libraries(cleopatra curl)
