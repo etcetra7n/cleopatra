@@ -1,58 +1,28 @@
-# Created by https://www.toptal.com/developers/gitignore/api/cmake,c++,node
-# Edit at https://www.toptal.com/developers/gitignore?templates=cmake,c++,node
+# Created by https://www.toptal.com/developers/gitignore/api/go,node
+# Edit at https://www.toptal.com/developers/gitignore?templates=go,node
 
-### C++ ###
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
+### Go ###
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
 *.so
 *.dylib
-*.dll
 
-# Fortran module files
-*.mod
-*.smod
+# Test binary, built with `go test -c`
+*.test
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
+# Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-*.app
 
-### CMake ###
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
+# Dependency directories (remove the comment below to include it)
+# vendor/
 
-### CMake Patch ###
-CMakeUserPresets.json
-
-# External projects
-*-prefix/
+# Go workspace file
+go.work
 
 ### Node ###
 # Logs
@@ -194,4 +164,4 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-# End of https://www.toptal.com/developers/gitignore/api/cmake,c++,node
+# End of https://www.toptal.com/developers/gitignore/api/go,node
