@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(SOURCES
     daemon/cleopatra.cpp
 )
-
+include_directories(include)
 add_executable(cleopatra ${SOURCES})
 target_link_libraries(cleopatra curl)
 install(
