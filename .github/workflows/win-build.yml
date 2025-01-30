@@ -13,7 +13,7 @@ jobs:
         
       - name: Install dependencies
         run: |
-          sudo apt-get install libcurl-dev
+          choco install libcurl
           
       - name: Build binaries
         run: |
