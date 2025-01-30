@@ -18,9 +18,9 @@ jobs:
       - name: Build binaries
         run: |
           cmake . -G "Unix Makefiles"
-          make .
+          make
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: cleopatra.exe
-          path: cleopatra.exe
+          name: daemon.exe
+          path: daemon.exe
