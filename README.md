@@ -1,13 +1,13 @@
-# Xthreads Backend functions
+# Cleopatra
 
-This is the drectory for the a netlify function used for the Xthreads application. The URL to access this function is https://xthreads.netlify.app/.netlify/functions/generate-thread?topic={topic}
+A program to execute any command on your PC remotely (PC have to be turned on)
 
-It uses the Gemini Node.js API to generate the thread in a JSON format which can be easily parsed in the front end
+The Cleopatra Service Daemon installed on your PC will connect with a Cleoptra 
+worker service (hosted on cloudlare) to receive jobs and run it and send back
+the results. 
 
-### Our prompt to Gemini
-
-"Generate a twitter thread for the topic "${topic}". This is for educational purpose. Include facts and other interesting things to read. Keep it straightforward and don't use any emojis. It should sound like a informative article. The thread should have 5 tweets including catchy starting tweet. Give result in a JSON format"
-
-### Why a backend function is necasssary
-
-Backend function is necassary because if I were to use the Gemini API in the front end, that would mean exposing my gemini API key to the public, which can lead to misuse
+There are two APIs facilitating this service: `/api/fetch-daemon-job` and 
+`/api/send-results-to-worker`. The daemon will send communicate with these 
+2 APIs. The daemon fetches jobs from worker every 2 minutes and if there is
+a job available, the daemon runs it and send back the output and exit code 
+of the job
