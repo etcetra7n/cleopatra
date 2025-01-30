@@ -4,7 +4,7 @@ project(cleopatra
     LANGUAGES CXX
 )
 #############################
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 #############################
 set(CMAKE_CXX_STANDARD 20)
 set(SOURCES
@@ -14,7 +14,13 @@ set(SOURCES
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 include_directories(include)
-add_executable(daemon WIN32 ${SOURCES} com.cleopatra.daemon.rc)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Building in Release mode")
+    add_executable(daemon WIN32 ${SOURCES} com.cleopatra.daemon.rc)
+else()
+    message(STATUS "Building in Debug mode")
+    add_executable(daemon ${SOURCES} com.cleopatra.daemon.rc)
+endif()
 target_link_libraries(daemon curl)
 install(
     TARGETS daemon

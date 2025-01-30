@@ -21,9 +21,9 @@ struct Result {
     std::string output;
 };
 int SendResultsToWorker(int jobId, Result res){
-    //std::cout << "Job ID: "+std::to_string(jobId) << std::endl;
-    //std::cout << "exit code: "+std::to_string(res.exitcode) << std::endl;
-    //std::cout << "output: "+res.output << std::endl;
+    std::cout << "Job ID: "+std::to_string(jobId) << std::endl;
+    std::cout << "exit code: "+std::to_string(res.exitcode) << std::endl;
+    std::cout << "output: "+res.output << std::endl;
     CURL *curl;
     CURLcode curlRes;
     curl = curl_easy_init();
@@ -51,12 +51,12 @@ int SendResultsToWorker(int jobId, Result res){
       curl_slist_free_all(headers);
     }
     curl_easy_cleanup(curl);
-    //std::cout << "result sent to worker" << std::endl;
     return 0;
 }
 Result exec(const char* cmd) {
     Result res;
     std::array<char, 128> buffer;
+    //std::cout << "Before running cmd" << std::endl;
     FILE *pipe = popen(cmd, "r");
     if (!pipe) throw std::runtime_error("popen() failed!");
     while (!feof(pipe)) {
@@ -65,6 +65,8 @@ Result exec(const char* cmd) {
     }
 
     res.exitcode = pclose(pipe);
+    //std::cout << "After running cmd" << std::endl;
+    std::cout << "\n" << std::endl;
     return res;
 }
 
@@ -86,7 +88,7 @@ void CALLBACK CronJob(HWND, UINT, UINT_PTR, DWORD){
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curlRes = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
-    //std::cout <<"job recieved: "<< readBuffer << std::endl;
+    std::cout <<"job recieved: "<< readBuffer<< "\n" << std::endl;
     
     rapidjson::StringStream json_stream(readBuffer.c_str());
     rapidjson::Document result; 
@@ -104,7 +106,7 @@ int main(void)
 {
     HWND hwnd = CreateWindowEx(0, "STATIC", NULL, 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
     
-    UINT_PTR timerId = SetTimer(hwnd, 1, 60000, CronJob); //60 seconds
+    UINT_PTR timerId = SetTimer(hwnd, 1, 20000, CronJob); //60 seconds
     if (!timerId) {
         std::cerr << "Failed to create timer.\n";
         return 1;

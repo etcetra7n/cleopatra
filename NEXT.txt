@@ -1,0 +1,1 @@
+make sure the commands always gets executed on powershell
