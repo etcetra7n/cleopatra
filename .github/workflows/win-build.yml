@@ -13,7 +13,7 @@ jobs:
         
       - name: Install dependencies
         run: |
-          choco install libcurl
+          choco install curl
           
       - name: Build binaries
         run: |
