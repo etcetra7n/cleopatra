@@ -8,22 +8,49 @@
 #include <stdexcept>
 #include <array>
 #include <windows.h>
-//#include <thread>
-//#include <chrono>
+#include <fstream>
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
+std::string escapeChars(std::string str){
+    std::string result="";
+    for (char c:str){
+        if(c==10) //newline
+          result += "<br>";
+        else if(c=='\t')
+          result += "<t>";
+        else if(c=='"')
+          result += "\\\"";
+        else if(c=='\\')
+          result += "\\\\";
+        else if(1<=c&&c<=31)
+          continue;
+        else
+          result += c;
+    }
+    return result;
+}
+int saveFile(std::string str){
+    std::ofstream outFile("FILE");
+    if (outFile.is_open()) {
+        outFile << str;
+        outFile.close();
+    } else {
+        return 1;
+    }
+    return 0;
+}
 struct Result {
     int exitcode;
     std::string output;
 };
 int SendResultsToWorker(int jobId, Result res){
-    std::cout << "Job ID: "+std::to_string(jobId) << std::endl;
-    std::cout << "exit code: "+std::to_string(res.exitcode) << std::endl;
-    std::cout << "output: "+res.output << std::endl;
+    //std::cout << "Job ID: "+std::to_string(jobId) << std::endl;
+    //std::cout << "exit code: "+std::to_string(res.exitcode) << std::endl;
+    //std::cout << "output: "+ res.output << std::endl;
     CURL *curl;
     CURLcode curlRes;
     curl = curl_easy_init();
@@ -35,38 +62,40 @@ int SendResultsToWorker(int jobId, Result res){
       struct curl_slist *headers = NULL;
       headers = curl_slist_append(headers, "Authorization:Taurus:ThisIsTaurusPassword");
       curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-      std::string body = "{\"jobId\":" + std::to_string(jobId) +
-                       ",\"output\":\"" + res.output +
-                       "\",\"exitCode\":" + std::to_string(res.exitcode) + "}";
-      std::string rawbody;
-      for (char c : body) {
-        if (c == '\n') 
-          rawbody += "\\n";
-        else 
-          rawbody += c;
-      }
-      //std::cout << rawbody << std::endl;
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, rawbody.c_str());
+      std::string post = "{\"jobId\":" + std::to_string(jobId) +","+
+                          "\"output\":\"" + res.output +"\","+
+                          "\"exitCode\":" + std::to_string(res.exitcode) + "}";
+      //std::cout << "final JSON BEGIN<"<< post<<">final JSON OVER"<<std::endl;
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post.c_str());
       curlRes = curl_easy_perform(curl);
       curl_slist_free_all(headers);
     }
     curl_easy_cleanup(curl);
     return 0;
 }
-Result exec(const char* cmd) {
+Result exec(std::string rawcmd) {
     Result res;
     std::array<char, 128> buffer;
-    //std::cout << "Before running cmd" << std::endl;
-    FILE *pipe = popen(cmd, "r");
+    std::string cmd;
+    for (char c : rawcmd) {
+        if (c == '"')
+          cmd += "\\\"";
+        else
+          cmd += c;
+    }
+    cmd = "powershell -command \""+cmd+"\"";
+    //std::cout << cmd << std::endl;
+    FILE *pipe = popen(cmd.c_str(), "r");
+    std::string rawoutput;
     if (!pipe) throw std::runtime_error("popen() failed!");
     while (!feof(pipe)) {
         if (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
-            res.output += buffer.data();
+            rawoutput += buffer.data();
     }
 
     res.exitcode = pclose(pipe);
-    //std::cout << "After running cmd" << std::endl;
-    std::cout << "\n" << std::endl;
+    //std::cout << "raw output: "+ rawoutput << std::endl;
+    res.output = escapeChars(rawoutput);
     return res;
 }
 
@@ -75,7 +104,6 @@ void CALLBACK CronJob(HWND, UINT, UINT_PTR, DWORD){
   CURL *curl;
   CURLcode curlRes;
   std::string readBuffer;
-
   curl = curl_easy_init();
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
@@ -88,15 +116,29 @@ void CALLBACK CronJob(HWND, UINT, UINT_PTR, DWORD){
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curlRes = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
-    std::cout <<"job recieved: "<< readBuffer<< "\n" << std::endl;
-    
+    //std::cout <<"job recieved: "<< readBuffer<< "\n" << std::endl;
+
     rapidjson::StringStream json_stream(readBuffer.c_str());
-    rapidjson::Document result; 
+    rapidjson::Document result;
     result.ParseStream(json_stream);
     const rapidjson::Value& jobs = result["body"];
     for (rapidjson::SizeType i = 0; i < jobs.Size(); i++){
+        Result res;
+        if (jobs[i]["file"].IsString()){
+            if (saveFile(jobs[i]["file"].GetString()) == 1){
+                res.exitcode = 501;
+                res.output = "<FILE_ERROR>Failed to create file<FILE_ERROR>";
+                SendResultsToWorker(jobs[i]["JOB_ID"].GetInt(), res);
+                continue;
+            }
+        }
         std::string command = jobs[i]["command"].GetString();
-        Result res = exec(command.c_str());
+        try{
+            res = exec(command);
+        } catch(const std::exception &e){
+            res.exitcode=500;
+            res.output += "<INTERNAL_ERROR>"+escapeChars(e.what())+"<INTERNAL_ERROR>";
+        }
         SendResultsToWorker(jobs[i]["JOB_ID"].GetInt(), res);
     }
   }
@@ -105,8 +147,8 @@ void CALLBACK CronJob(HWND, UINT, UINT_PTR, DWORD){
 int main(void)
 {
     HWND hwnd = CreateWindowEx(0, "STATIC", NULL, 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
-    
-    UINT_PTR timerId = SetTimer(hwnd, 1, 20000, CronJob); //60 seconds
+
+    UINT_PTR timerId = SetTimer(hwnd, 1, 120000, CronJob); //60000 = 1 min
     if (!timerId) {
         std::cerr << "Failed to create timer.\n";
         return 1;

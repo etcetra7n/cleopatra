@@ -8,7 +8,7 @@ export default {
     const { pathname } = new URL(request.url);
     if (pathname === "/api/fetch-daemon-job") {
         const data = await env.DB.prepare(
-          "SELECT JOB_ID, command FROM runnable WHERE status = ?"
+          "SELECT JOB_ID, command, file FROM runnable WHERE (status = ? OR status IS NULL)"
         ).bind('CREATED').all();
         await env.DB.prepare(
             "UPDATE runnable SET status='SENT TO DAEMON' WHERE status = ?"
