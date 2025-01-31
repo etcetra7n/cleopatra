@@ -2,8 +2,8 @@
 
 A program to execute any command on your PC remotely (PC have to be turned on)
 
-The Cleopatra Service Daemon installed on your PC will connect with a Cleoptra 
-worker service (hosted on cloudlare) to receive jobs and run it and send back
+The Cleopatra Service Daemon installed on your PC will connect with the Cleoptra 
+worker server(hosted on cloudlare) to receive jobs and run it and send back
 the results. 
 
 There are two APIs facilitating this service: `/api/fetch-daemon-job` and 
