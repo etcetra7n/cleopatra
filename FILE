@@ -1,7 +1,0 @@
-from win10toast import ToastNotifier
-
-# Create an instance of ToastNotifier
-toaster = ToastNotifier()
-
-# Send a notification
-toaster.show_toast("Hello", "This is a toast notification", duration=5)

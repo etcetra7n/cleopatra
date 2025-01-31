@@ -1,4 +1,5 @@
 .wrangler/
+archive/
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,cmake,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,cmake,node
@@ -197,4 +198,3 @@ dist
 .svelte-kit
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,cmake,node
-archive/

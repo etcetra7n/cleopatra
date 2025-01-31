@@ -10,9 +10,11 @@ export default {
         const data = await env.DB.prepare(
           "SELECT JOB_ID, command, file FROM runnable WHERE (status = ? OR status IS NULL)"
         ).bind('CREATED').all();
-        await env.DB.prepare(
-            "UPDATE runnable SET status='SENT TO DAEMON' WHERE status = ?"
-        ).bind('CREATED').all()
+        if (data.results.length !== 0){
+            await env.DB.prepare(
+                "UPDATE runnable SET status='SENT TO DAEMON' WHERE (status = ? OR status IS NULL)"
+            ).bind('CREATED').all()
+        }
         const response = {
             statusCode: 200,
             body: data.results,
