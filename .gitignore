@@ -149,7 +149,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist
 
 # Gatsby files
 .cache/
@@ -198,4 +198,5 @@ dist
 .svelte-kit
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,cmake,node
-!daemon.exe
+!dist/**/*.exe
+!release/**/*.exe
