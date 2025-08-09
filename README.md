@@ -18,5 +18,4 @@ The daemon will send communicate with these 2 APIs. The daemon fetches
 jobs from worker every 2 minutes and if there is a job available, the
 daemon runs it and send back the output and exit code of the job
 
-
-
+The daemon only uses less that 1 Mb while running in the background
