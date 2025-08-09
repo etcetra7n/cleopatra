@@ -10,12 +10,13 @@ to turn it off before leaving your home for a 10 day trip to Europe. You
 can use your PC even if you are not in the physical vicinity of it.
 
 The Cleopatra Service Daemon installed on your PC will connect with the Cleoptra 
-worker server(hosted on cloudlare) to receive jobs and run it and send back
+worker server(hosted on a server) to receive jobs and run it and send back
 the results. 
 
 There are two APIs facilitating this service: `/api/fetch` and `/api/send`.
 The daemon will send communicate with these 2 APIs. The daemon fetches
 jobs from worker every 2 minutes and if there is a job available, the
 daemon runs it and send back the output and exit code of the job
+
 
 
