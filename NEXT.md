@@ -1,0 +1,8 @@
+- [x] Run the sch.ps1 as an administrator using CreateProcess
+- [x] Be able to execute commands only in specified machines
+- [x] Change the default directory in which daemon executes jobs
+- [x] Automate the entire install process
+- [x] Rename run directory to chache directory
+- [ ] Create a protocol to remotely update the daemon
+- [x] Create a protocol to remotely self destruct the daemon
+- [ ] Implement a way to set the refresh rate remotely

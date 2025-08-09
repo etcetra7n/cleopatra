@@ -1,0 +1,38 @@
+name: On-demand build on Windows
+
+on:
+  workflow_dispatch:
+
+jobs:    
+  windows-build:
+    name: Build (windows-latest, MSVC)
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build executable
+      run: |
+        cd build
+        cmake -S .. -A x64 -DCMAKE_BUILD_TYPE="Release" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -B MSVC
+        cmake --build MSVC --target ALL_BUILD --config Release
+    
+    - name: Build installer
+      run: |
+        cd ${{ github.workspace }}/installer/build
+        Copy-Item -Recurse -Force -Path ${{ github.workspace }}/build/MSVC/Release/* -Destination ${{ github.workspace }}/installer/data
+        powershell -Command "Compress-Archive -Force -Path ../data/* -DestinationPath ./data.zip"
+        xxd -i data.zip > ../data.h
+        cmake -S .. -A x64 -DCMAKE_BUILD_TYPE="Release" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -B MSVC
+        cmake --build MSVC --target ALL_BUILD --config Release
+
+    - name: Upload executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: csdhr_on_demand_build_executable
+        path: ${{ github.workspace }}/build/MSVC/Release/
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: csdhr_on_demand_build_installer
+        path: ${{ github.workspace }}/installer/build/MSVC/Release/

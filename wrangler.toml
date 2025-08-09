@@ -1,0 +1,9 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "<REDACTED>"
+main = "worker/prod/index.js"
+compatibility_date = "2025-04-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cleopatra"
+database_id = "<REDACTED>"
