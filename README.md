@@ -3,7 +3,7 @@
 This is a light-weight backdoor access malware program made for educational purposes only
 
 A program to execute any command on your PC remotely (PC have to be turned on).
-Even though it is intended malicious computer software, it can have a
+Even though it is intended to be a educative malware, it can have a
 lot of ethical uses as well. It can be used to remotely computer your PC 
 and shut it down  on the event of a security threat, or because you forgot 
 to turn it off before leaving your home for a 10 day trip to Europe. You 
@@ -17,4 +17,5 @@ There are two APIs facilitating this service: `/api/fetch` and `/api/send`.
 The daemon will send communicate with these 2 APIs. The daemon fetches
 jobs from worker every 2 minutes and if there is a job available, the
 daemon runs it and send back the output and exit code of the job
+
 
